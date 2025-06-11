@@ -241,3 +241,164 @@ export interface EmployeeStatsResponse {
     }>;
   };
 }
+
+export enum PayrollStatus {
+  DRAFT = 'DRAFT',
+  CALCULATED = 'CALCULATED',
+  APPROVED = 'APPROVED',
+  PAID = 'PAID'
+}
+
+export enum PayrollItemType {
+  ALLOWANCE = 'ALLOWANCE',
+  DEDUCTION = 'DEDUCTION'
+}
+
+export interface Payroll {
+  id: string;
+  year: number;
+  month: number;
+  employeeId: string;
+  employee?: Employee;
+  
+  // 基本給与
+  baseSalary: number;
+  
+  // 労働時間
+  workHours: number;
+  overtimeHours: number;
+  nightHours: number;
+  holidayHours: number;
+  
+  // 割増賃金
+  overtimePay: number;
+  nightPay: number;
+  holidayPay: number;
+  
+  // 各種手当
+  transportAllowance: number;
+  familyAllowance: number;
+  housingAllowance: number;
+  positionAllowance: number;
+  skillAllowance: number;
+  otherAllowances: number;
+  
+  // 総支給額
+  grossSalary: number;
+  
+  // 社会保険料
+  healthInsurance: number;
+  pensionInsurance: number;
+  employmentInsurance: number;
+  longCareInsurance: number;
+  
+  // 税金
+  incomeTax: number;
+  residenceTax: number;
+  
+  // その他控除
+  otherDeductions: number;
+  
+  // 総控除額
+  totalDeductions: number;
+  
+  // 差引支給額
+  netSalary: number;
+  
+  // 勤怠データ参照期間
+  attendanceFrom: string;
+  attendanceTo: string;
+  
+  status: PayrollStatus;
+  calculatedAt?: string;
+  approvedBy?: string;
+  approvedAt?: string;
+  paymentDate?: string;
+  remarks?: string;
+  createdAt: string;
+  updatedAt: string;
+  
+  payrollItems?: PayrollItem[];
+}
+
+export interface PayrollItem {
+  id: string;
+  payrollId: string;
+  name: string;
+  type: PayrollItemType;
+  amount: number;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SalaryTemplate {
+  id: string;
+  name: string;
+  baseSalary: number;
+  transportAllowance: number;
+  familyAllowance: number;
+  housingAllowance: number;
+  positionAllowance: number;
+  skillAllowance: number;
+  hourlyRate?: number;
+  overtimeRate: number;
+  nightRate: number;
+  holidayRate: number;
+  isActive: boolean;
+  companyId: string;
+  positionId?: string;
+  position?: Position;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PayrollCalculationRequest {
+  employeeId: string;
+  year: number;
+  month: number;
+}
+
+export interface PayrollListParams {
+  employeeId?: string;
+  year?: number;
+  month?: number;
+  status?: PayrollStatus;
+  page?: number;
+  limit?: number;
+}
+
+export interface PayrollListResponse {
+  success: boolean;
+  data: {
+    payrolls: Payroll[];
+    pagination: {
+      page: number;
+      limit: number;
+      total: number;
+      totalPages: number;
+      hasNext: boolean;
+      hasPrev: boolean;
+    };
+  };
+}
+
+export interface PayrollStatistics {
+  period: {
+    year: number;
+    month: number;
+  };
+  summary: {
+    totalEmployees: number;
+    totalGrossSalary: number;
+    totalNetSalary: number;
+    totalOvertimePay: number;
+    averageGrossSalary: number;
+  };
+  departmentStats: Record<string, {
+    count: number;
+    totalGross: number;
+    totalNet: number;
+    totalOvertime: number;
+  }>;
+}

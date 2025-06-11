@@ -14,6 +14,8 @@ import { PositionDetail } from './components/positions/PositionDetail';
 import { PositionForm } from './components/positions/PositionForm';
 import { OrganizationChart } from './components/organization/OrganizationChart';
 import { AttendanceManagement } from './components/attendance/AttendanceManagement';
+import { PayrollManagement } from './components/payroll/PayrollManagement';
+import { DashboardOverview } from './components/dashboard/DashboardOverview';
 
 // Protected Route component
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -42,27 +44,27 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             <div className="flex items-center space-x-8">
               <h1 className="text-xl font-semibold text-gray-900">HR-OSS</h1>
               <div className="hidden md:flex space-x-8">
-                <a href="/dashboard" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                <Link to="/dashboard" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   ダッシュボード
-                </a>
-                <a href="/employees" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/employees" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   従業員管理
-                </a>
-                <a href="/departments" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/departments" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   部署管理
-                </a>
-                <a href="/positions" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/positions" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   役職管理
-                </a>
-                <a href="/organization" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/organization" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   組織図
-                </a>
-                <a href="/attendance" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/attendance" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   勤怠管理
-                </a>
-                <a href="/payroll" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
+                </Link>
+                <Link to="/payroll" className="text-gray-500 hover:text-gray-700 px-3 py-2 rounded-md text-sm font-medium">
                   給与管理
-                </a>
+                </Link>
               </div>
             </div>
             <div className="flex items-center space-x-4">
@@ -246,12 +248,12 @@ const Dashboard: React.FC = () => {
                 </svg>
                 勤怠管理 - 出退勤・残業時間の管理
               </Link>
-              <div className="flex items-center p-3 text-sm text-gray-400 rounded-lg bg-gray-50">
-                <svg className="flex-shrink-0 h-5 w-5 text-gray-300 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <Link to="/payroll" className="flex items-center p-3 text-sm text-gray-600 rounded-lg hover:bg-gray-50">
+                <svg className="flex-shrink-0 h-5 w-5 text-gray-400 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 給与管理 - 給与計算・明細作成
-              </div>
+              </Link>
               <div className="flex items-center p-3 text-sm text-gray-400 rounded-lg bg-gray-50">
                 <svg className="flex-shrink-0 h-5 w-5 text-gray-300 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -345,7 +347,9 @@ function App() {
               path="/dashboard"
               element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <Layout>
+                    <DashboardOverview />
+                  </Layout>
                 </ProtectedRoute>
               }
             />
@@ -489,6 +493,17 @@ function App() {
                 <ProtectedRoute>
                   <Layout>
                     <AttendanceManagement />
+                  </Layout>
+                </ProtectedRoute>
+              }
+            />
+            {/* Payroll Routes */}
+            <Route
+              path="/payroll"
+              element={
+                <ProtectedRoute>
+                  <Layout>
+                    <PayrollManagement />
                   </Layout>
                 </ProtectedRoute>
               }

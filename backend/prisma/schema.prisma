@@ -20,14 +20,15 @@ model Company {
   updatedAt DateTime @updatedAt
 
   // Relations
-  users         User[]
-  employees     Employee[]
-  departments   Department[]
-  positions     Position[]
-  attendances   Attendance[]
-  payrolls      Payroll[]
-  leaveRequests LeaveRequest[]
-  leaveBalances EmployeeLeaveBalance[]
+  users           User[]
+  employees       Employee[]
+  departments     Department[]
+  positions       Position[]
+  attendances     Attendance[]
+  payrolls        Payroll[]
+  leaveRequests   LeaveRequest[]
+  leaveBalances   EmployeeLeaveBalance[]
+  salaryTemplates SalaryTemplate[]
 
   @@map("companies")
 }
@@ -124,11 +125,12 @@ model Position {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  company      Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId    String
-  department   Department @relation(fields: [departmentId], references: [id])
-  departmentId String
-  employees    Employee[]
+  company         Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId       String
+  department      Department      @relation(fields: [departmentId], references: [id])
+  departmentId    String
+  employees       Employee[]
+  salaryTemplates SalaryTemplate[]
 
   @@map("positions")
 }
@@ -214,27 +216,120 @@ model Payroll {
   id              String         @id @default(cuid())
   year            Int
   month           Int
+  
+  // 基本給与
   baseSalary      Decimal        @db.Decimal(12, 2)
+  
+  // 労働時間・手当
+  workHours       Decimal        @default(0) @db.Decimal(6, 2)
+  overtimeHours   Decimal        @default(0) @db.Decimal(6, 2)
+  nightHours      Decimal        @default(0) @db.Decimal(6, 2)
+  holidayHours    Decimal        @default(0) @db.Decimal(6, 2)
+  
+  // 割増賃金
   overtimePay     Decimal        @default(0) @db.Decimal(12, 2)
-  allowances      Decimal        @default(0) @db.Decimal(12, 2)
-  deductions      Decimal        @default(0) @db.Decimal(12, 2)
-  incomeTax       Decimal        @default(0) @db.Decimal(12, 2)
-  socialInsurance Decimal        @default(0) @db.Decimal(12, 2)
+  nightPay        Decimal        @default(0) @db.Decimal(12, 2)
+  holidayPay      Decimal        @default(0) @db.Decimal(12, 2)
+  
+  // 各種手当
+  transportAllowance    Decimal  @default(0) @db.Decimal(10, 2)
+  familyAllowance       Decimal  @default(0) @db.Decimal(10, 2)
+  housingAllowance      Decimal  @default(0) @db.Decimal(10, 2)
+  positionAllowance     Decimal  @default(0) @db.Decimal(10, 2)
+  skillAllowance        Decimal  @default(0) @db.Decimal(10, 2)
+  otherAllowances       Decimal  @default(0) @db.Decimal(10, 2)
+  
+  // 総支給額
+  grossSalary     Decimal        @db.Decimal(12, 2)
+  
+  // 社会保険料
+  healthInsurance       Decimal  @default(0) @db.Decimal(10, 2)
+  pensionInsurance      Decimal  @default(0) @db.Decimal(10, 2)
+  employmentInsurance   Decimal  @default(0) @db.Decimal(10, 2)
+  longCareInsurance     Decimal  @default(0) @db.Decimal(10, 2)
+  
+  // 税金
+  incomeTax       Decimal        @default(0) @db.Decimal(10, 2)
+  residenceTax    Decimal        @default(0) @db.Decimal(10, 2)
+  
+  // その他控除
+  otherDeductions Decimal        @default(0) @db.Decimal(10, 2)
+  
+  // 総控除額
+  totalDeductions Decimal        @db.Decimal(12, 2)
+  
+  // 差引支給額
   netSalary       Decimal        @db.Decimal(12, 2)
+  
+  // 勤怠データ参照期間
+  attendanceFrom  DateTime       @db.Date
+  attendanceTo    DateTime       @db.Date
+  
   status          PayrollStatus  @default(DRAFT)
+  calculatedAt    DateTime?
+  approvedBy      String?
+  approvedAt      DateTime?
   paymentDate     DateTime?
   remarks         String?
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
 
   // Relations
-  employee  Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
-  employeeId String
-  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
-  companyId String
+  employee        Employee       @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId      String
+  company         Company        @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId       String
+  payrollItems    PayrollItem[]
 
   @@unique([employeeId, year, month])
   @@map("payrolls")
+}
+
+// 給与項目詳細（手当・控除の明細）
+model PayrollItem {
+  id          String          @id @default(cuid())
+  name        String          // 項目名（通勤手当、住宅手当等）
+  type        PayrollItemType // 支給項目か控除項目か
+  amount      Decimal         @db.Decimal(10, 2)
+  description String?         // 計算根拠等の詳細
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  // Relations
+  payroll   Payroll @relation(fields: [payrollId], references: [id], onDelete: Cascade)
+  payrollId String
+
+  @@map("payroll_items")
+}
+
+// 給与設定テンプレート
+model SalaryTemplate {
+  id                String   @id @default(cuid())
+  name              String   // テンプレート名
+  baseSalary        Decimal  @db.Decimal(12, 2)
+  transportAllowance Decimal @default(0) @db.Decimal(10, 2)
+  familyAllowance   Decimal  @default(0) @db.Decimal(10, 2)
+  housingAllowance  Decimal  @default(0) @db.Decimal(10, 2)
+  positionAllowance Decimal  @default(0) @db.Decimal(10, 2)
+  skillAllowance    Decimal  @default(0) @db.Decimal(10, 2)
+  
+  // 時間単価設定
+  hourlyRate        Decimal? @db.Decimal(8, 2) // 時間給（時給制の場合）
+  overtimeRate      Decimal  @default(1.25) @db.Decimal(3, 2) // 残業割増率
+  nightRate         Decimal  @default(1.25) @db.Decimal(3, 2) // 深夜割増率
+  holidayRate       Decimal  @default(1.35) @db.Decimal(3, 2) // 休日割増率
+  
+  isActive          Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  // Relations
+  company           Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId         String
+  position          Position? @relation(fields: [positionId], references: [id])
+  positionId        String?
+
+  @@map("salary_templates")
 }
 
 // Enums
@@ -317,4 +412,9 @@ enum PayrollStatus {
   CALCULATED
   APPROVED
   PAID
+}
+
+enum PayrollItemType {
+  ALLOWANCE    // 支給項目（手当等）
+  DEDUCTION    // 控除項目
 }
