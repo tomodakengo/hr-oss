@@ -15,7 +15,9 @@
       "Bash(touch:*)",
       "Bash(npx:*)",
       "Bash(npm:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(ls:*)",
+      "Bash(npm audit fix:*)"
     ],
     "deny": []
   }

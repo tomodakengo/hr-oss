@@ -378,6 +378,21 @@ docker-compose config
 netstat -tulpn | grep :3001
 ```
 
+### Q. npm ci エラー（package-lock.json not found）
+
+**症状:**
+```
+npm error The `npm ci` command can only install with an existing package-lock.json
+```
+
+**解決方法:**
+修正済み：Dockerfileでnpm installを使用するように変更済み。
+```bash
+# 完全リセットして再ビルド
+./docker-reset.sh
+./start.sh
+```
+
 ### Q. ボリュームマウントエラー
 
 **症状:**

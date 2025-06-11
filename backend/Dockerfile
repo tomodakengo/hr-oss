@@ -8,10 +8,10 @@ RUN apk add --no-cache curl
 WORKDIR /app
 
 # Copy package files first for better caching
-COPY package*.json ./
+COPY package.json ./
 
 # Install dependencies (need dev dependencies for TypeScript compilation)
-RUN npm ci && npm cache clean --force
+RUN npm install && npm cache clean --force
 
 # Copy prisma schema first
 COPY prisma ./prisma/
