@@ -10,11 +10,18 @@ services:
       POSTGRES_DB: hr_oss
       POSTGRES_USER: hr_user
       POSTGRES_PASSWORD: hr_password
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --locale=C"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hr_user -d hr_oss"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
     networks:
       - hr-oss-network
 
@@ -41,14 +48,18 @@ services:
       REDIS_URL: redis://redis:6379
       JWT_SECRET: your-super-secret-jwt-key
       PORT: 3001
+      FRONTEND_URL: http://localhost:3000
     ports:
       - "3001:3001"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend/src:/app/src
+      - ./backend/prisma:/app/prisma
+      - backend_node_modules:/app/node_modules
     networks:
       - hr-oss-network
 
@@ -61,18 +72,23 @@ services:
     restart: unless-stopped
     environment:
       REACT_APP_API_URL: http://localhost:3001/api
+      WATCHPACK_POLLING: 'true'
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - frontend_node_modules:/app/node_modules
     networks:
       - hr-oss-network
 
 volumes:
   postgres_data:
+  backend_node_modules:
+  frontend_node_modules:
 
 networks:
   hr-oss-network:

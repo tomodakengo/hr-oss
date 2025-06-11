@@ -22,6 +22,24 @@ hr-oss/
 
 ## 🚀 セットアップ手順
 
+### クイックスタート（Docker使用）
+
+**推奨: 1コマンドで起動**
+```bash
+./start.sh
+```
+
+**手動でDocker起動**
+```bash
+# 環境変数設定
+cp backend/.env.example backend/.env
+
+# Docker起動
+docker-compose up -d --build
+```
+
+### ローカル開発環境
+
 ### 1. リポジトリクローン
 ```bash
 git clone https://github.com/your-org/hr-oss.git
@@ -37,6 +55,7 @@ npm install
 ```bash
 # backend/.env
 cp backend/.env.example backend/.env
+# 必要に応じて設定値を編集
 ```
 
 ### 4. データベースセットアップ
@@ -97,15 +116,48 @@ FRONTEND_URL=http://localhost:3000
 
 ## 🐳 Docker開発環境
 
+### 基本コマンド
 ```bash
-# Docker Compose で起動
-docker-compose up -d
+# 1コマンド起動（推奨）
+./start.sh
+
+# 手動起動
+docker-compose up -d --build
 
 # ログ確認
 docker-compose logs -f
 
-# 再ビルド
-docker-compose up --build
+# 停止
+docker-compose down
+
+# 再起動
+docker-compose restart
+```
+
+### トラブルシューティング
+```bash
+# 診断実行
+./docker-troubleshoot.sh
+
+# 完全リセット（データ削除）
+./docker-reset.sh
+
+# 特定サービスの再ビルド
+docker-compose up -d --build backend
+docker-compose up -d --build frontend
+```
+
+### データベース操作
+```bash
+# PostgreSQL接続
+docker-compose exec postgres psql -U hr_user -d hr_oss
+
+# データベース初期化
+docker-compose exec backend npm run db:push
+docker-compose exec backend npm run db:seed
+
+# Prisma Studio（GUI）
+docker-compose exec backend npm run db:studio
 ```
 
 ## 🧪 テスト実行

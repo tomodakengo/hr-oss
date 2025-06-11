@@ -10,7 +10,12 @@
       "Bash(npm run build:*)",
       "Bash(npm uninstall:*)",
       "Bash(docker-compose up:*)",
-      "Bash(npm run start:*)"
+      "Bash(npm run start:*)",
+      "Bash(chmod:*)",
+      "Bash(touch:*)",
+      "Bash(npx:*)",
+      "Bash(npm:*)",
+      "Bash(docker-compose:*)"
     ],
     "deny": []
   }

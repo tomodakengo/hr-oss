@@ -1,32 +1,37 @@
-# Multi-stage build for React frontend
-FROM node:18-alpine as builder
+# Development stage for React frontend
+FROM node:18-alpine
+
+# Install curl for health checks
+RUN apk add --no-cache curl
 
 # Set working directory
 WORKDIR /app
 
-# Copy package files
+# Copy package files first for better caching
 COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including dev dependencies for development)
+RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
 
-# Build the application
-RUN npm run build
+# Create non-root user
+RUN addgroup -g 1001 -S nodejs && \
+    adduser -S nodejs -u 1001
 
-# Production stage with nginx
-FROM nginx:alpine
+# Change ownership of the app directory
+RUN chown -R nodejs:nodejs /app
 
-# Copy built app from builder stage
-COPY --from=builder /app/build /usr/share/nginx/html
-
-# Copy nginx configuration
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Switch to non-root user
+USER nodejs
 
 # Expose port 3000
 EXPOSE 3000
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:3000 || exit 1
+
+# Start the development server
+CMD ["npm", "start"]
