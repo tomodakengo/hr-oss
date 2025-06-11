@@ -1,0 +1,238 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Company {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  phone     String?
+  address   String?
+  website   String?
+  industry  String?
+  size      CompanySize?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  users      User[]
+  employees  Employee[]
+  departments Department[]
+  positions   Position[]
+  attendances Attendance[]
+  payrolls   Payroll[]
+
+  @@map("companies")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  password    String
+  firstName   String
+  lastName    String
+  role        UserRole @default(HR_STAFF)
+  isActive    Boolean  @default(true)
+  lastLogin   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  @@map("users")
+}
+
+model Employee {
+  id              String           @id @default(cuid())
+  employeeNumber  String           @unique
+  email           String           @unique
+  firstName       String
+  lastName        String
+  firstNameKana   String?
+  lastNameKana    String?
+  birthDate       DateTime?
+  gender          Gender?
+  phone           String?
+  mobile          String?
+  address         String?
+  postalCode      String?
+  emergencyContact String?
+  emergencyPhone  String?
+  hireDate        DateTime
+  resignationDate DateTime?
+  employmentType  EmploymentType   @default(FULL_TIME)
+  status          EmployeeStatus   @default(ACTIVE)
+  profileImage    String?
+  bankAccount     String?
+  bankBranch      String?
+  bankName        String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId   String
+  department  Department?  @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  position    Position?    @relation(fields: [positionId], references: [id])
+  positionId  String?
+  attendances Attendance[]
+  payrolls    Payroll[]
+
+  @@map("employees")
+}
+
+model Department {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  parentId    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  company   Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+  parent    Department? @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children  Department[] @relation("DepartmentHierarchy")
+  employees Employee[]
+  positions Position[]
+
+  @@map("departments")
+}
+
+model Position {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  level       Int?
+  baseSalary  Decimal? @db.Decimal(12, 2)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  company      Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId    String
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+  employees    Employee[]
+
+  @@map("positions")
+}
+
+model Attendance {
+  id            String            @id @default(cuid())
+  date          DateTime          @db.Date
+  clockIn       DateTime?
+  clockOut      DateTime?
+  breakStart    DateTime?
+  breakEnd      DateTime?
+  workHours     Decimal?          @db.Decimal(4, 2)
+  overtimeHours Decimal?          @db.Decimal(4, 2)
+  status        AttendanceStatus  @default(PRESENT)
+  remarks       String?
+  location      String?
+  ipAddress     String?
+  approvedBy    String?
+  approvedAt    DateTime?
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
+
+  // Relations
+  employee  Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  @@unique([employeeId, date])
+  @@map("attendances")
+}
+
+model Payroll {
+  id              String         @id @default(cuid())
+  year            Int
+  month           Int
+  baseSalary      Decimal        @db.Decimal(12, 2)
+  overtimePay     Decimal        @default(0) @db.Decimal(12, 2)
+  allowances      Decimal        @default(0) @db.Decimal(12, 2)
+  deductions      Decimal        @default(0) @db.Decimal(12, 2)
+  incomeTax       Decimal        @default(0) @db.Decimal(12, 2)
+  socialInsurance Decimal        @default(0) @db.Decimal(12, 2)
+  netSalary       Decimal        @db.Decimal(12, 2)
+  status          PayrollStatus  @default(DRAFT)
+  paymentDate     DateTime?
+  remarks         String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  // Relations
+  employee  Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId String
+
+  @@unique([employeeId, year, month])
+  @@map("payrolls")
+}
+
+// Enums
+enum UserRole {
+  ADMIN
+  HR_STAFF
+  MANAGER
+  EMPLOYEE
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+}
+
+enum EmployeeStatus {
+  ACTIVE
+  INACTIVE
+  RESIGNED
+  TERMINATED
+}
+
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  EARLY_LEAVE
+  VACATION
+  SICK_LEAVE
+  BUSINESS_TRIP
+}
+
+enum PayrollStatus {
+  DRAFT
+  CALCULATED
+  APPROVED
+  PAID
+}
