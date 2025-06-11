@@ -14,6 +14,7 @@ import authRoutes from './routes/auth';
 import employeeRoutes from './routes/employees';
 import departmentRoutes from './routes/departments';
 import positionRoutes from './routes/positions';
+import { attendanceRoutes } from './routes/attendance';
 
 dotenv.config();
 
@@ -104,6 +105,7 @@ app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/employees', employeeRoutes);
 app.use('/api/v1/departments', departmentRoutes);
 app.use('/api/v1/positions', positionRoutes);
+app.use('/api/v1/attendance', attendanceRoutes);
 
 // Default API route
 app.get('/api/v1', (req, res) => {
@@ -114,6 +116,7 @@ app.get('/api/v1', (req, res) => {
       employees: '/api/v1/employees',
       departments: '/api/v1/departments',
       positions: '/api/v1/positions',
+      attendance: '/api/v1/attendance',
       docs: '/api-docs',
       health: '/health'
     }

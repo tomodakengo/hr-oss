@@ -20,12 +20,14 @@ model Company {
   updatedAt DateTime @updatedAt
 
   // Relations
-  users      User[]
-  employees  Employee[]
-  departments Department[]
-  positions   Position[]
-  attendances Attendance[]
-  payrolls   Payroll[]
+  users         User[]
+  employees     Employee[]
+  departments   Department[]
+  positions     Position[]
+  attendances   Attendance[]
+  payrolls      Payroll[]
+  leaveRequests LeaveRequest[]
+  leaveBalances EmployeeLeaveBalance[]
 
   @@map("companies")
 }
@@ -83,8 +85,10 @@ model Employee {
   departmentId String?
   position    Position?    @relation(fields: [positionId], references: [id])
   positionId  String?
-  attendances Attendance[]
-  payrolls    Payroll[]
+  attendances    Attendance[]
+  payrolls       Payroll[]
+  leaveRequests  LeaveRequest[]
+  leaveBalances  EmployeeLeaveBalance[]
 
   @@map("employees")
 }
@@ -138,7 +142,10 @@ model Attendance {
   breakEnd      DateTime?
   workHours     Decimal?          @db.Decimal(4, 2)
   overtimeHours Decimal?          @db.Decimal(4, 2)
+  nightHours    Decimal?          @db.Decimal(4, 2)
+  holidayHours  Decimal?          @db.Decimal(4, 2)
   status        AttendanceStatus  @default(PRESENT)
+  attendanceType AttendanceType   @default(WORK_DAY)
   remarks       String?
   location      String?
   ipAddress     String?
@@ -155,6 +162,52 @@ model Attendance {
 
   @@unique([employeeId, date])
   @@map("attendances")
+}
+
+model LeaveRequest {
+  id          String      @id @default(cuid())
+  startDate   DateTime    @db.Date
+  endDate     DateTime    @db.Date
+  days        Decimal     @db.Decimal(3, 1)
+  leaveType   LeaveType
+  reason      String?
+  status      LeaveStatus @default(PENDING)
+  submittedAt DateTime    @default(now())
+  reviewedBy  String?
+  reviewedAt  DateTime?
+  remarks     String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId  String
+
+  @@map("leave_requests")
+}
+
+model EmployeeLeaveBalance {
+  id               String   @id @default(cuid())
+  year             Int
+  annualLeave      Decimal  @default(20) @db.Decimal(4, 1)
+  usedAnnualLeave  Decimal  @default(0) @db.Decimal(4, 1)
+  sickLeave        Decimal  @default(0) @db.Decimal(4, 1)
+  usedSickLeave    Decimal  @default(0) @db.Decimal(4, 1)
+  specialLeave     Decimal  @default(0) @db.Decimal(4, 1)
+  usedSpecialLeave Decimal  @default(0) @db.Decimal(4, 1)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  // Relations
+  employee   Employee @relation(fields: [employeeId], references: [id], onDelete: Cascade)
+  employeeId String
+  company    Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  companyId  String
+
+  @@unique([employeeId, year])
+  @@map("employee_leave_balances")
 }
 
 model Payroll {
@@ -228,6 +281,35 @@ enum AttendanceStatus {
   VACATION
   SICK_LEAVE
   BUSINESS_TRIP
+}
+
+enum AttendanceType {
+  WORK_DAY
+  HOLIDAY
+  PAID_LEAVE
+  SICK_LEAVE
+  SPECIAL_LEAVE
+  MATERNITY_LEAVE
+  PATERNITY_LEAVE
+  COMPENSATORY_LEAVE
+}
+
+enum LeaveType {
+  ANNUAL_LEAVE
+  SICK_LEAVE
+  SPECIAL_LEAVE
+  MATERNITY_LEAVE
+  PATERNITY_LEAVE
+  BEREAVEMENT_LEAVE
+  COMPENSATORY_LEAVE
+  UNPAID_LEAVE
+}
+
+enum LeaveStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
 }
 
 enum PayrollStatus {

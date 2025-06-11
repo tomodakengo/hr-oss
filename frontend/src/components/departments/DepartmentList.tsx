@@ -38,7 +38,7 @@ export const DepartmentList: React.FC = () => {
   };
 
   // Build department hierarchy
-  const buildHierarchy = (depts: Department[]): Department[] => {
+  const buildHierarchy = (depts: Department[]): (Department & { children: Department[] })[] => {
     const deptMap = new Map<string, Department & { children: Department[] }>();
     const roots: (Department & { children: Department[] })[] = [];
 
@@ -134,7 +134,7 @@ export const DepartmentList: React.FC = () => {
         
         {dept.children.length > 0 && expandedDepts.has(dept.id) && (
           <div className="bg-gray-50">
-            {renderDepartmentTree(dept.children, level + 1)}
+            {renderDepartmentTree(dept.children as (Department & { children: Department[] })[], level + 1)}
           </div>
         )}
       </div>

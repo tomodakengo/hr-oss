@@ -226,59 +226,6 @@ export const PositionDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Assigned Employees */}
-      {position.employees && position.employees.length > 0 && (
-        <div className="mt-6">
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">配属従業員</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">この役職に配属されている従業員一覧</p>
-            </div>
-            <div className="border-t border-gray-200">
-              <ul className="divide-y divide-gray-200">
-                {position.employees.map((employee) => (
-                  <li key={employee.id} className="px-4 py-4 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-8 w-8">
-                          <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <span className="text-xs font-medium text-indigo-700">
-                              {employee.lastName.charAt(0)}{employee.firstName.charAt(0)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-3">
-                          <Link 
-                            to={`/employees/${employee.id}`}
-                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                          >
-                            {employee.lastName} {employee.firstName}
-                          </Link>
-                          <div className="text-sm text-gray-500">
-                            {employee.employeeNumber} • {employee.email}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                          employee.status === 'active' 
-                            ? 'bg-green-100 text-green-800' 
-                            : employee.status === 'inactive'
-                            ? 'bg-gray-100 text-gray-800'
-                            : 'bg-yellow-100 text-yellow-800'
-                        }`}>
-                          {employee.status === 'active' ? 'アクティブ' : 
-                           employee.status === 'inactive' ? '無効' : '休職中'}
-                        </span>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Position Stats */}
       <div className="mt-6 grid grid-cols-1 gap-5 sm:grid-cols-3">

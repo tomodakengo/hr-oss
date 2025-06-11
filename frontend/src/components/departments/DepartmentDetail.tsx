@@ -114,7 +114,7 @@ export const DepartmentDetail: React.FC = () => {
           </Link>
           <button
             onClick={handleDelete}
-            disabled={(department.employees && department.employees.length > 0) || (department.children && department.children.length > 0)}
+            disabled={(department._count?.employees || 0) > 0 || (department.children && department.children.length > 0)}
             className="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             削除
@@ -148,7 +148,7 @@ export const DepartmentDetail: React.FC = () => {
                   {department.isActive ? 'アクティブ' : '無効'}
                 </span>
                 <span className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
-                  {department.employees?.length || 0}名所属
+                  {department._count?.employees || 0}名所属
                 </span>
               </div>
             </div>
@@ -240,91 +240,6 @@ export const DepartmentDetail: React.FC = () => {
         </div>
       )}
 
-      {/* Employees */}
-      {department.employees && department.employees.length > 0 && (
-        <div className="mt-6">
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">所属従業員</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">この部署に所属している従業員一覧</p>
-            </div>
-            <div className="border-t border-gray-200">
-              <ul className="divide-y divide-gray-200">
-                {department.employees.map((employee) => (
-                  <li key={employee.id} className="px-4 py-4 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center">
-                        <div className="flex-shrink-0 h-8 w-8">
-                          <div className="h-8 w-8 rounded-full bg-indigo-100 flex items-center justify-center">
-                            <span className="text-xs font-medium text-indigo-700">
-                              {employee.lastName.charAt(0)}{employee.firstName.charAt(0)}
-                            </span>
-                          </div>
-                        </div>
-                        <div className="ml-3">
-                          <Link 
-                            to={`/employees/${employee.id}`}
-                            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                          >
-                            {employee.lastName} {employee.firstName}
-                          </Link>
-                          <div className="text-sm text-gray-500">
-                            {employee.employeeNumber} • {employee.email}
-                          </div>
-                        </div>
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {(employee as any).position?.name || '役職未設定'}
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Positions */}
-      {(department as any).positions && (department as any).positions.length > 0 && (
-        <div className="mt-6">
-          <div className="bg-white shadow sm:rounded-lg">
-            <div className="px-4 py-5 sm:px-6">
-              <h3 className="text-lg leading-6 font-medium text-gray-900">関連役職</h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">この部署に設定されている役職一覧</p>
-            </div>
-            <div className="border-t border-gray-200">
-              <ul className="divide-y divide-gray-200">
-                {(department as any).positions.map((position: any) => (
-                  <li key={position.id} className="px-4 py-4 hover:bg-gray-50">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <Link 
-                          to={`/positions/${position.id}`}
-                          className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
-                        >
-                          {position.name}
-                        </Link>
-                        {position.level && (
-                          <span className="ml-2 text-sm text-gray-500">レベル {position.level}</span>
-                        )}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        <Link 
-                          to={`/positions/${position.id}`}
-                          className="hover:text-gray-700"
-                        >
-                          詳細を見る →
-                        </Link>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

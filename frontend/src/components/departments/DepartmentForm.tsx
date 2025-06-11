@@ -109,7 +109,7 @@ export const DepartmentForm: React.FC<DepartmentFormProps> = ({ isEdit = false }
     }
   };
 
-  const buildDepartmentHierarchy = (depts: Department[], parentId?: string, level = 0): JSX.Element[] => {
+  const buildDepartmentHierarchy = (depts: Department[], parentId?: string, level = 0): React.ReactElement[] => {
     return depts
       .filter(dept => dept.parentId === parentId)
       .map(dept => (

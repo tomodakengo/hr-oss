@@ -26,7 +26,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({ isEdit = false }) =>
   const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [currentPosition, setCurrentPosition] = useState<Position | null>(null);
+  const [, setCurrentPosition] = useState<Position | null>(null);
 
   const { departments } = useDepartments();
 
@@ -53,7 +53,7 @@ export const PositionForm: React.FC<PositionFormProps> = ({ isEdit = false }) =>
           reset({
             name: position.name,
             description: position.description || '',
-            departmentId: position.departmentId,
+            departmentId: position.department.id,
             level: position.level || undefined,
             baseSalary: position.baseSalary || undefined,
           });

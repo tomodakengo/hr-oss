@@ -68,7 +68,10 @@ export interface Attendance {
   breakEnd?: string;
   workHours?: number;
   overtimeHours?: number;
+  nightHours?: number;
+  holidayHours?: number;
   status: AttendanceStatus;
+  attendanceType: AttendanceType;
   remarks?: string;
   location?: string;
   ipAddress?: string;
@@ -76,6 +79,35 @@ export interface Attendance {
   approvedAt?: string;
   createdAt: string;
   updatedAt: string;
+  employee?: Employee;
+}
+
+export interface LeaveRequest {
+  id: string;
+  startDate: string;
+  endDate: string;
+  days: number;
+  leaveType: LeaveType;
+  reason?: string;
+  status: LeaveStatus;
+  submittedAt: string;
+  reviewedBy?: string;
+  reviewedAt?: string;
+  remarks?: string;
+  createdAt: string;
+  updatedAt: string;
+  employee?: Employee;
+}
+
+export interface LeaveBalance {
+  year: number;
+  annualLeave: number;
+  usedAnnualLeave: number;
+  remainingAnnualLeave: number;
+  sickLeave: number;
+  usedSickLeave: number;
+  specialLeave: number;
+  usedSpecialLeave: number;
 }
 
 export enum Gender {
@@ -106,6 +138,35 @@ export enum AttendanceStatus {
   VACATION = 'VACATION',
   SICK_LEAVE = 'SICK_LEAVE',
   BUSINESS_TRIP = 'BUSINESS_TRIP',
+}
+
+export enum AttendanceType {
+  WORK_DAY = 'WORK_DAY',
+  HOLIDAY = 'HOLIDAY',
+  PAID_LEAVE = 'PAID_LEAVE',
+  SICK_LEAVE = 'SICK_LEAVE',
+  SPECIAL_LEAVE = 'SPECIAL_LEAVE',
+  MATERNITY_LEAVE = 'MATERNITY_LEAVE',
+  PATERNITY_LEAVE = 'PATERNITY_LEAVE',
+  COMPENSATORY_LEAVE = 'COMPENSATORY_LEAVE',
+}
+
+export enum LeaveType {
+  ANNUAL_LEAVE = 'ANNUAL_LEAVE',
+  SICK_LEAVE = 'SICK_LEAVE',
+  SPECIAL_LEAVE = 'SPECIAL_LEAVE',
+  MATERNITY_LEAVE = 'MATERNITY_LEAVE',
+  PATERNITY_LEAVE = 'PATERNITY_LEAVE',
+  BEREAVEMENT_LEAVE = 'BEREAVEMENT_LEAVE',
+  COMPENSATORY_LEAVE = 'COMPENSATORY_LEAVE',
+  UNPAID_LEAVE = 'UNPAID_LEAVE',
+}
+
+export enum LeaveStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+  CANCELLED = 'CANCELLED',
 }
 
 export interface EmployeeCreateRequest {
