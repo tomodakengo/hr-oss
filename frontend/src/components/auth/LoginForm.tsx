@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '../../contexts/AuthContext';
 import { LoginCredentials } from '../../types/auth';
 
 export const LoginForm: React.FC = () => {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { login, isLoading } = useAuth();
   const [formData, setFormData] = useState<LoginCredentials>({
     email: '',
@@ -32,7 +33,7 @@ export const LoginForm: React.FC = () => {
 
     try {
       await login(formData);
-      navigate('/dashboard');
+      router.push('/dashboard');
     } catch (error: any) {
       setError(error.response?.data?.error || 'ログインに失敗しました');
     }

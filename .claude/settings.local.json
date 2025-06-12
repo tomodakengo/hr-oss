@@ -19,7 +19,8 @@
       "Bash(ls:*)",
       "Bash(npm audit fix:*)",
       "Bash(rg:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   }
