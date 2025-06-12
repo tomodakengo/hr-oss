@@ -17,7 +17,9 @@
       "Bash(npm:*)",
       "Bash(docker-compose:*)",
       "Bash(ls:*)",
-      "Bash(npm audit fix:*)"
+      "Bash(npm audit fix:*)",
+      "Bash(rg:*)",
+      "Bash(rm:*)"
     ],
     "deny": []
   }

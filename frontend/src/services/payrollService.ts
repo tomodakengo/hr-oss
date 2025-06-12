@@ -1,12 +1,10 @@
 import { apiService } from './api';
 import {
   Payroll,
-  PayrollCalculationRequest,
   PayrollListParams,
   PayrollListResponse,
   PayrollStatistics,
   PayrollStatus,
-  SalaryTemplate,
 } from '../types/employee';
 
 export class PayrollService {
@@ -100,7 +98,7 @@ export class PayrollService {
 
   // 給与明細PDF生成（将来実装）
   async generatePayslipPDF(id: string): Promise<Blob> {
-    const response = await apiService.get(`/payroll/${id}/payslip/pdf`, {
+    const response = await apiService.get<Blob>(`/payroll/${id}/payslip/pdf`, {
       responseType: 'blob'
     });
     return response.data;
@@ -117,7 +115,7 @@ export class PayrollService {
     queryParams.append('month', params.month.toString());
     queryParams.append('format', params.format);
 
-    const response = await apiService.get(
+    const response = await apiService.get<Blob>(
       `/payroll/export?${queryParams.toString()}`,
       { responseType: 'blob' }
     );

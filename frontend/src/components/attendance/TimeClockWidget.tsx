@@ -144,7 +144,7 @@ export const TimeClockWidget: React.FC<TimeClockWidgetProps> = ({ employeeId, on
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  const isOnBreak = attendance?.breakStart && !attendance?.breakEnd;
+  const isOnBreak = !!(attendance?.breakStart && !attendance?.breakEnd);
   const hasClockIn = !!attendance?.clockIn;
   const hasClockOut = !!attendance?.clockOut;
 

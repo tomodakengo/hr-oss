@@ -32,15 +32,23 @@ export const DashboardOverview: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+        <div className="relative">
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-200"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-4 border-indigo-600 border-t-transparent absolute top-0 left-0"></div>
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-md">
-        {error}
+      <div className="bg-gradient-to-r from-red-50 to-pink-50 border border-red-200/50 text-red-700 px-6 py-4 rounded-xl shadow-lg">
+        <div className="flex items-center">
+          <svg className="w-6 h-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span className="font-medium">{error}</span>
+        </div>
       </div>
     );
   }
@@ -52,17 +60,22 @@ export const DashboardOverview: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* ヘッダー */}
-      <div className="sm:flex sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">
-            {overview.currentPeriod.year}年{overview.currentPeriod.month}月 ダッシュボード
-          </h1>
-          <p className="mt-1 text-sm text-gray-500">
-            HR管理システムの総合状況
-          </p>
-        </div>
-        <div className="mt-4 sm:mt-0 text-sm text-gray-500">
-          最終更新: {new Date().toLocaleTimeString('ja-JP')}
+      <div className="bg-white/80 backdrop-blur-lg shadow-xl rounded-2xl p-8 border border-white/20">
+        <div className="sm:flex sm:items-center sm:justify-between">
+          <div>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-gray-900 to-gray-600 bg-clip-text text-transparent">
+              {overview.currentPeriod.year}年{overview.currentPeriod.month}月 ダッシュボード
+            </h1>
+            <p className="mt-2 text-gray-600">
+              HR管理システムの総合状況
+            </p>
+          </div>
+          <div className="mt-4 sm:mt-0">
+            <div className="bg-gradient-to-r from-indigo-50 to-blue-50 px-4 py-2 rounded-xl border border-indigo-200/50">
+              <span className="text-sm text-gray-600">最終更新:</span>
+              <span className="text-sm font-medium text-indigo-700 ml-1">{new Date().toLocaleTimeString('ja-JP')}</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -90,40 +103,32 @@ export const DashboardOverview: React.FC = () => {
       {/* KPI サマリー */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* 総従業員数 */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a4 4 0 11-8 0 4 4 0 018 0z" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">総従業員数</dt>
-                  <dd className="text-3xl font-bold text-gray-900">{overview.totalEmployees}</dd>
-                </dl>
-              </div>
+        <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-indigo-500 to-blue-600 rounded-xl flex items-center justify-center">
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5 0a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <div className="text-sm font-semibold text-gray-700">総従業員数</div>
+              <div className="text-3xl font-bold text-gray-900">{overview.totalEmployees}</div>
             </div>
           </div>
         </div>
 
         {/* 今日の出勤率 */}
-        <div className="bg-white overflow-hidden shadow rounded-lg">
-          <div className="p-5">
-            <div className="flex items-center">
-              <div className="flex-shrink-0">
-                <svg className="h-6 w-6 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-              <div className="ml-5 w-0 flex-1">
-                <dl>
-                  <dt className="text-sm font-medium text-gray-500 truncate">今日の出勤率</dt>
-                  <dd className={`text-3xl font-bold ${dashboardService.getAttendanceRateColor(attendance.today.attendanceRate)}`}>
-                    {dashboardService.formatPercentage(attendance.today.attendanceRate)}
-                  </dd>
-                </dl>
+        <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200/50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="flex items-center">
+            <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center">
+              <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            <div className="ml-4">
+              <div className="text-sm font-semibold text-gray-700">今日の出勤率</div>
+              <div className={`text-3xl font-bold ${dashboardService.getAttendanceRateColor(attendance.today.attendanceRate)}`}>
+                {dashboardService.formatPercentage(attendance.today.attendanceRate)}
               </div>
             </div>
           </div>
